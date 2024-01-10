@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearningCoroutine"
         tools:targetApi="31">
+        <activity android:name=".NewActivity">
+        </activity>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
