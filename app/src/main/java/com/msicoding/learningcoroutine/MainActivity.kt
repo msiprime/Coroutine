@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -20,21 +21,15 @@ class MainActivity : ComponentActivity() {
         GlobalScope.launch {
             val x = measureTimeMillis {
 
-                var file1: String? = null
-                var file2: String? = null
-
-                val job1 = launch {
-                    file1 = getFile()
-                }
-                val job2 = launch {
-                    file2 = getFile2()
+                val file1 = async {
+                    getFile()
                 }
 
-                job1.join()
-                job2.join()
-
-                Log.d("tag_coroutine", "File 1: $file1")
-                Log.d("tag_coroutine", "File 1: $file2")
+                val file2 = async {
+                    getFile2()
+                }
+                Log.d("tag_coroutine", "File 1: ${file1.await()}")
+                Log.d("tag_coroutine", "File 1: ${file2.await()}")
             }
             Log.d("tag_coroutine", "Total time : $x")
         }
