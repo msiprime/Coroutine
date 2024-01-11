@@ -1,120 +1,53 @@
 package com.msicoding.learningcoroutine
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.msicoding.learningcoroutine.ui.theme.LearningCoroutineTheme
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlin.system.measureTimeMillis
 
 class MainActivity : ComponentActivity() {
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            LearningCoroutineTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navHostController = rememberNavController()
-                    NavHost(
-                        navController = navHostController,
-                        startDestination = "Home"
-                    ) {
-                        composable("home") {
-                            HomeScreen {
-                                navHostController.navigate("second")
-                            }
-                        }
 
-                        composable("second") {
-                            SecondScreen {
-                                Intent(
-                                    this@MainActivity, NewActivity::class.java
-                                ).also {
-                                    startActivity(it)
-                                    finish()
-                                }
-                            }
-                        }
-                    }
+        GlobalScope.launch {
+            val x = measureTimeMillis {
+
+                var file1: String? = null
+                var file2: String? = null
+
+                val job1 = launch {
+                    file1 = getFile()
                 }
+                val job2 = launch {
+                    file2 = getFile2()
+                }
+
+                job1.join()
+                job2.join()
+
+                Log.d("tag_coroutine", "File 1: $file1")
+                Log.d("tag_coroutine", "File 1: $file2")
             }
-        }
-        lifecycleScope.launch {
-            while (true) {
-                delay(2000)
-                Log.d("tag_coroutines", "LifeCycleScope")
-            }
-        }
-    }
-}
-
-@Composable
-fun HomeScreen(
-    onGoClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Button(onClick = { onGoClick() }) {
-            Text(text = "Go")
+            Log.d("tag_coroutine", "Total time : $x")
         }
     }
 
-}
-
-@Composable
-fun SecondScreen(
-    onGoClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        LaunchedEffect(key1 = true) {
-
-        }
-        Button(onClick = { onGoClick() }) {
-            Text(text = "Go new activity")
-        }
+    private suspend fun getFile(): String {
+        delay(4000)
+        return "File 1"
     }
-}
 
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    LearningCoroutineTheme {
-        HomeScreen(onGoClick = {})
+    private suspend fun getFile2(): String {
+        delay(4000)
+        return "File 2"
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun SecondScreenPreview(
-
-) {
-    LearningCoroutineTheme {
-        SecondScreen(onGoClick = {})
-    }
 }
