@@ -1,12 +1,15 @@
 package com.msicoding.learningcoroutine
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.runBlocking
 
 
@@ -17,54 +20,55 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         runBlocking {
 
-//            getDataFlow().collect { data ->
-//                Log.d(tag, "received: $data")
-//            }
-
-            countdownTimer().collect { time ->
-                Log.d(tag, "Counting: $time")
-            }
+            flow()
+                .filter { timer ->
+                    timer.contains("This")
+                }
+                .map {
+                    it + 2
+                }
+                .collect {
+                    Log.d(tag, "Value: $it")
+                }
 
         }
+
     }
 
-    private fun getDataFlow(): Flow<String> {
-        return flow {
+    private fun flow(): Flow<Int> = flow {
 
-            emit("start  loading...")
-            delay(1000)
-
-            emit("got the data...")
-            delay(1000)
-
-            emit("filtering the data...")
-            delay(1000)
-
-            emit("data is ready...")
-            delay(1000)
-
-            emit("stop loading...")
-
+        repeat(5) {
+            emit(it)
         }
-    }
 
-    private fun countdownTimer(): Flow<Int> = flow {
-        var startTimer = 10
-        while (startTimer >= 0) {
-            delay(1000)
-            emit(
-                value = startTimer
-            )
-            startTimer--
-        }
     }
 }
 
+/*
+
+private var timer = 1
+    private fun flow(): Flow<String> = flow {
+
+        emit("This is $timer")
+        delay(1000)
+        timer++
+
+        emit("That is $timer")
+        delay(1000)
+        timer++
+
+        emit("This is $timer")
+        delay(1000)
+        timer++
+
+        emit("That is $timer")
+        delay(1000)
+        timer++
 
 
+    }
 
-
-
+* */
 
 
 
