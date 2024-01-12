@@ -3,9 +3,12 @@ package com.msicoding.learningcoroutine
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -16,21 +19,22 @@ import kotlinx.coroutines.runBlocking
 class MainActivity : ComponentActivity() {
     private val tag = "kotlin_flows"
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         runBlocking {
 
             flow()
-                .filter { timer ->
-                    timer.contains("This")
-                }
-                .map {
-                    it + 2
+
+                .flatMapLatest {
+                    flow {
+                        delay(1000)
+                        emit(it * 10)
+                    }
                 }
                 .collect {
                     Log.d(tag, "Value: $it")
                 }
-
         }
 
     }
